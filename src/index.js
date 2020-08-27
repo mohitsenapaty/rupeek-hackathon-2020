@@ -9,10 +9,10 @@ const app = require('./config/express');
 app.listen(port, () => logger.info(`Server started on port ${port} (${env})`));
 
 // Init sequelize
-const db = require('./api/models');
-global.sequelize = db;
+// const db = require('./api/models');
+// global.sequelize = db;
 
-const cache = require('./api/services/cache.service');
-cache.intitialize();
+// const cache = require('./api/services/cache.service');
+// cache.intitialize();
 
 module.exports = app;
