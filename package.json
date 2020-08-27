@@ -1,0 +1,56 @@
+{
+  "name": "rupeek-hackathon-2020",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohitsenapaty/rupeek-hackathon-2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohitsenapaty/rupeek-hackathon-2020/issues"
+  },
+  "homepage": "https://github.com/mohitsenapaty/rupeek-hackathon-2020#readme",
+  "dependencies": {
+    "@sentry/node": "^5.12.3",
+    "async": "^3.2.0",
+    "aws-sdk": "^2.610.0",
+    "axios": "^0.19.0",
+    "bcrypt-nodejs": "0.0.3",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "celebrate": "^11.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "dotenv-safe": "^6.1.0",
+    "express": "^4.17.1",
+    "express-policies": "^1.0.5",
+    "express-winston": "^4.0.2",
+    "helmet": "^3.21.2",
+    "http-status": "^1.4.2",
+    "https": "^1.0.0",
+    "lodash": "^4.17.15",
+    "method-override": "^3.0.0",
+    "moment": "^2.24.0",
+    "passport": "^0.4.1",
+    "pg": "^7.11.0",
+    "pg-hstore": "^2.3.3",
+    "qs": "^6.9.1",
+    "redis": "^3.0.2",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "sequelize": "^5.10.1",
+    "sequelize-cli": "^5.5.0",
+    "sprintf": "^0.1.5",
+    "sqs-consumer": "^3.8.0",
+    "winston": "^3.2.1",
+    "winston-console-formatter": "1.0.0-beta.3",
+    "winston-daily-rotate-file": "^4.4.2"
+  }
+}
