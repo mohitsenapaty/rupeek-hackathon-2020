@@ -5,7 +5,7 @@ CREATE TABLE investor (
     refid text,
     pass text,
     phone text
-)
+);
 
 CREATE SEQUENCE investor_id_seq;
 
@@ -22,7 +22,7 @@ CREATE TABLE investmenttochunk (
     schemeinterest real,
     amount real,
     earning real
-)
+);
 
 CREATE SEQUENCE investmenttochunk_id_seq;
 
@@ -42,7 +42,7 @@ CREATE TABLE investment (
     returntotal real,
     roimaxlimit real,
     status text
-)
+);
 
 CREATE SEQUENCE investment_id_seq;
 
@@ -65,7 +65,7 @@ CREATE TABLE loan (
     scheme real,
     residueamount real,
     status text
-)
+);
 
 CREATE SEQUENCE loan_id_seq;
 
@@ -86,7 +86,7 @@ CREATE TABLE chunk (
     closedon timestamp,
     currentinterestrate real,
     status text
-)
+);
 
 CREATE SEQUENCE chunk_id_seq;
 
