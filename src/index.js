@@ -1,7 +1,12 @@
-const logger = require('./config/logger').logger;
+const { logger } = require('./config/logger');
+
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
 const { port, env } = require('./config/vars');
+
+const db = require('./api/models');
+
+global.sequelize = db;
 
 const app = require('./config/express');
 

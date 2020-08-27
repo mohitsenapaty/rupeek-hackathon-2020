@@ -21,16 +21,16 @@ exports.middlewareLogger = expressWinston.logger(env === 'production' ? {
   requestWhitelist: [...expressWinston.requestWhitelist, 'body'],
   responseWhitelist: [...expressWinston.responseWhitelist, 'body'],
 } : {
-    transports: [
-      new winston.transports.Console({
-        format: winston.format.simple(),
-      }),
-    ],
-    format: winston.format.colorize(),
-    meta: false,
-    expressFormat: true,
-    colorize: true,
-  });
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    }),
+  ],
+  format: winston.format.colorize(),
+  meta: false,
+  expressFormat: true,
+  colorize: true,
+});
 
 exports.logger = winston.createLogger({
   level: 'info',
@@ -44,6 +44,6 @@ exports.logger = winston.createLogger({
       maxFiles: '3d',
     }),
   ] : [
-      new winston.transports.Console(),
-    ],
+    new winston.transports.Console(),
+  ],
 });
