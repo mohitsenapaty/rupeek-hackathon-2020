@@ -1,39 +1,36 @@
 module.exports = (sequelize, DataTypes) => {
   const Investment = sequelize.define('Investment', {
-    id: {
-      type: DataTypes.INTEGER,
-    },
     investor: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     amount: {
       type: DataTypes.REAL,
+      allowNull: false,
+    },
+    returntotal: {
+      type: DataTypes.REAL,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    roimaxlimit: {
+      type: DataTypes.REAL,
+      allowNull: false,
     },
     investedon: {
       type: DataTypes.DATE,
+      allowNull: false,
+    },
+    fetchedon: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     closedon: {
       type: DataTypes.DATE,
     },
-    fetchedon: {
-      type: DataTypes.DATE,
-    },
-    returntotal: {
-      type: DataTypes.REAL,
-    },
-    roimaxlimit: {
-      type: DataTypes.REAL,
-    },
-    status: {
-      type: DataTypes.TEXT,
-    },
-    createdAt: {
-      type: DataTypes.STRING,
-    },
-    updatedAt: {
-      type: DataTypes.STRING,
-    }
-
   }, {
     tableName: 'investment',
   });

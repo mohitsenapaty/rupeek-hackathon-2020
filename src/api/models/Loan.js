@@ -1,28 +1,35 @@
 module.exports = (sequelize, DataTypes) => {
   const Loan = sequelize.define('Loan', {
-    id: {
-      type: DataTypes.INTEGER,
-    },
     loanid: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     loanamount: {
       type: DataTypes.REAL,
+      allowNull: false,
     },
     balanceamount: {
       type: DataTypes.REAL,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     tenure: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     startedon: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
     expirydate: {
       type: DataTypes.DATE,
     },
     fetchedon: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
     closedon: {
       type: DataTypes.DATE,
@@ -33,15 +40,6 @@ module.exports = (sequelize, DataTypes) => {
     residueamount: {
       type: DataTypes.REAL,
     },
-    status: {
-      type: DataTypes.TEXT,
-    },
-    createdAt: {
-      type: DataTypes.STRING,
-    },
-    updatedAt: {
-      type: DataTypes.STRING,
-    }
   }, {
     tableName: 'loan',
   });
