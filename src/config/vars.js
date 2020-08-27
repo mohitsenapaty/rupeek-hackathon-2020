@@ -17,4 +17,6 @@ module.exports = {
   pg: {
     uri: process.env.DEV_DATABASE_URL,
   },
+  supporttoken: process.env.SUPPORTTOKEN,
+  chunkSize: 1000,
 };
