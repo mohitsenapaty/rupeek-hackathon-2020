@@ -8,6 +8,8 @@ const router = express.Router();
 */
 router.get('/api/health', (req, res) => res.send({ status: 'up' }));
 
+router.use(routesV1);
+
 /**
 * API Routes
 */
