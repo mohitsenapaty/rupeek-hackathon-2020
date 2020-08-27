@@ -1,9 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Chunk = sequelize.define('Chunk', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     loan: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -29,14 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     investedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
     },
     closedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     fetchedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
     },
   }, {
     tableName: 'chunk',

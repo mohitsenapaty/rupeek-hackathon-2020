@@ -21,3 +21,5 @@ router
    * @apiError (Forbidden 403)     Forbidden
    */
   .post(controller.syncLoanFromPayments);
+
+module.exports = router;

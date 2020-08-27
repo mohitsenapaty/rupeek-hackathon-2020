@@ -1,9 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Loan = sequelize.define('Loan', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     loanid: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -25,18 +21,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     startedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     expirydate: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
     },
     fetchedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     closedon: {
-      type: DataTypes.TIMESTAMP,
+      type: DataTypes.DATE,
     },
     scheme: {
       type: DataTypes.REAL,

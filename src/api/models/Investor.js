@@ -1,9 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Investor = sequelize.define('Loan', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     refid: {
       type: DataTypes.STRING,
       allowNull: false,

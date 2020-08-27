@@ -4,6 +4,7 @@ const {
   isEmpty,
   pick,
   times,
+  fill,
 } = require('lodash');
 
 const loanService = require('../services/loan.service');
@@ -12,13 +13,24 @@ const { logger } = require('../../config/logger');
 const {
   Loan,
   Chunk,
-} = global.sequelize();
+} = global.sequelize;
 
 exports.syncLoanFromPayments = async (req, res, next) => {
   try {
-    const { loan } = req.query;
+    const { loan } = req.body;
+    /* const loanObj = {
+      loanid: '111',
+      loanamount: 10000,
+      balanceamount: 10000,
+      tenure: 6,
+      startedon: moment(),
+      expirydate: moment(),
+      scheme: 19.76,
+    };
+    */
+    console.log(loan);
     const loanObj = await loanService.getLoanFromPayments(loan);
-    const presentLoans = await Loan.find({
+    const presentLoans = await Loan.findAll({
       where: {
         loanid: loan,
       },
@@ -52,10 +64,21 @@ const createLoans = async (params) => {
     status: 'OPEN',
     fetchedon: moment(),
   };
-  await Loan.create(loancreateObj);
+  const createdLoan = await Loan.create(loancreateObj);
+  console.log(createdLoan);
   const initialLoanChunk = {
-
+    loan: createdLoan.id,
+    interestrate: params.scheme,
+    currentinterestrate: params.scheme,
+    status: 'OPEN',
+    invested: false,
+    closed: false,
+    fetchedon: moment(),
   };
-  const chunkList = times(initialLoanChunk, 10);
+  console.log(initialLoanChunk);
+  const numChunks = Math.floor(params.balanceamount / 1000);
+  // const chunkList = times(10, initialLoanChunk);
+  const chunkList = fill(Array(numChunks), initialLoanChunk);
+  console.log(chunkList);
   await Chunk.bulkCreate(chunkList);
 };

@@ -6,9 +6,7 @@ const { port, env } = require('./config/vars');
 
 const db = require('./api/models');
 
-exports.init = () => {
-  global.sequelize = db;
-};
+global.sequelize = db;
 
 const app = require('./config/express');
 

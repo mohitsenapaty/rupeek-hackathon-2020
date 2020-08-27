@@ -1,9 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Investmenttochunk = sequelize.define('Investmenttochunk', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     investmentid: {
       type: DataTypes.INTEGER,
       allowNull: false,
