@@ -1,4 +1,7 @@
 const express = require('express');
+
+const routesV1 = require('./v1');
+
 const router = express.Router();
 
 /**
@@ -10,6 +13,8 @@ router.get('/api/status', (req, res, next) => {
   })
   next();
 });
+
+router.use(routesV1);
 
 /**
 * API Routes
