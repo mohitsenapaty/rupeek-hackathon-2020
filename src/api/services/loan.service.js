@@ -14,7 +14,7 @@ exports.getLoanFromPayments = async (loanid) => {
 
   logger.info(options);
   const response = await axios(options);
-  logger.info(response);
+  logger.info(response.data);
 
   return response.data.loan;
 };
