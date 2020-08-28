@@ -40,7 +40,8 @@ exports.listInvestments = async (req, res, next) => {
         const investment = await Investment.createInvestmentByParams(paramsMod);
         let error1 = '';
         try{
-          await otherUtil.mapInvestmentToChunks(investment.id, req.body.lroi, req.body.hroi);
+          console.log(investment.id, req.body.lroi, req.body.hroi);
+          //await otherUtil.mapInvestmentToChunks(investment.id, req.body.lroi, req.body.hroi);
         } catch(err) {
           console.log(err);
           error1 = err.message;

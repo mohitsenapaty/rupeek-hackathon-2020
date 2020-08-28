@@ -7,7 +7,7 @@ const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 const investorMatcherUtil = require('./investor_matcher.util');
 
-exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
+exports.getMostRelevantKChunks1 = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
   try {
     let availableChunks = await Chunk.findAll({
       where: { invested: false, closed: false },
@@ -24,7 +24,7 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
   }
 }
 
-exports.getMostRelevantKChunks1 = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
+exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
   try {
     let availableChunks = await Chunk.findAll({
       where: { invested: false, closed: false },

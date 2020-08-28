@@ -2,7 +2,7 @@
  * It is assumed that investor would invest only in some units
  * i. e. amount%{unit_value} = 0, where unit_value is the cost of one unit
  */
-const {forEach, sortBy, filter} = require('lodash');
+const {forEach, sortBy, filter, slice } = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 const {
@@ -106,28 +106,30 @@ const getChunksWithGivenReturnValue = async (chunks, expectedReturn) => {
   let response = [];
   let choseStart = true;
   let returnSorFar = 0;
-  while (start < end) {
-    if(choseStart && chunks[start].amount + returnSorFar <= expectedReturn){
-      //pick the smallest value
-      response.push(chunks[start]);
-      returnSorFar += chunks[start].amount;
-      choseStart = false;
-      start++;
-    } else {
-      start++;
-      choseStart = false;
-    }
-    if (!choseStart && chunks[end].returnableValue + returnSorFar <= expectedReturn){
-      //pick the largest value
-      response.push(chunks[end]);
-      returnSorFar += chunks[end].amount;
-      choseStart = true;
-      end--;
-    } else {
-      choseStart = true;
-      end--;
-    }
-  }
+  // while (start < end) {
+  //   if(choseStart && chunks[start].amount + returnSorFar <= expectedReturn){
+  //     //pick the smallest value
+  //     response.push(chunks[start]);
+  //     returnSorFar += chunks[start].amount;
+  //     choseStart = false;
+  //     start++;
+  //   } else {
+  //     start++;
+  //     choseStart = false;
+  //   }
+  //   if (!choseStart && chunks[end].returnableValue + returnSorFar <= expectedReturn){
+  //     //pick the largest value
+  //     response.push(chunks[end]);
+  //     returnSorFar += chunks[end].amount;
+  //     choseStart = true;
+  //     end--;
+  //   } else {
+  //     choseStart = true;
+  //     end--;
+  //   }
+  // }
+  const n = expectedReturn / 1000;
+  response = slice(chunks, 0, n);
   return response;
 };
 
