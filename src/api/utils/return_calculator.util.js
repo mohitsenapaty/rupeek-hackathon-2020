@@ -61,18 +61,18 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     let chunkIds = [];
     let remainingChunks = [];
     forEach(response, response => {
-      chunkIds.push(response.id);
+      chunkIds.push(response.id+"");
     });
     if (chunkIds.length < clusterSize) {
       let leftInvestment = [];
       forEach(availableChunks, chunk=>{
-        if (!includes(chunkIds, chunk.id)){
+        if (!includes(chunkIds, chunk.id+"")){
           leftInvestment.push(chunk);
         }
       });
       const amountLeft = (clusterSize - chunkIds.length)*1000;
       const rateOfReturnExpected  = (rangeLowInterest + rangeHighInterest)/2;
-      remainingChunks = await investorMatcherUtil.filterChunksForGivenReturn(availableChunks, amountLeft, timePeriod, rateOfReturnExpected);
+      remainingChunks = await investorMatcherUtil.filterChunksForGivenReturn(leftInvestment, amountLeft, timePeriod, rateOfReturnExpected);
     }
     forEach(remainingChunks, chunk => {
       response.push(chunk);
