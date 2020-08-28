@@ -15,4 +15,9 @@ router
   
   .post(controller.createInvestment);
 
+router
+  .route('/sync')
+  
+  .post(controller.syncInvestment); 
+
 module.exports = router;
