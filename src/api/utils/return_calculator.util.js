@@ -2,9 +2,10 @@ const {
   Chunk, Loan,
 } = global.sequelize;
 const skmeans = require("skmeans");
-const { forEach, pick, filter } = require('lodash');
+const { forEach, pick, filter, includes } = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
+const investorMatcherUtil = require('./investor_matcher.util');
 
 exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
   try {
@@ -55,7 +56,45 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
         response.push(chunkUnit);
       }
     });
-    responseObj.chunks = response;
+    // k-means not giving all the points, pick the remaining ones from
+    // different algorithm
+    let chunkIds = [];
+    let remainingChunks = [];
+    forEach(response, response => {
+      chunkIds.push(response.id+"");
+    });
+    if (chunkIds.length < clusterSize) {
+      let leftInvestment = [];
+      forEach(availableChunks, chunk=>{
+        if (!includes(chunkIds, chunk.id+"")){
+          leftInvestment.push(chunk);
+        }
+      });
+      const amountLeft = (clusterSize - chunkIds.length)*1000;
+      const rateOfReturnExpected  = (rangeLowInterest + rangeHighInterest)/2;
+      remainingChunks = await investorMatcherUtil.filterChunksForGivenReturn(leftInvestment, amountLeft, timePeriod, rateOfReturnExpected);
+    }
+    forEach(remainingChunks, chunk => {
+      response.push(chunk);
+    });
+    let modifiedResponse = [];
+    forEach(response, response =>{
+      const resp = {
+        ...pick(response, [
+          'id',
+          'loan',
+          'interestrate',
+          'invested',
+          'closed',
+          'amount',
+          'maxPercentageReturn',
+          'minPercentageReturn',
+          'percentageReturn',
+          'status',
+      ])};
+      modifiedResponse.push(resp);
+    });
+    responseObj.chunks = modifiedResponse;
     return responseObj;
   } catch (err) {
     logger.error('Error in creating cluster:', err);
