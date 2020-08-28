@@ -37,16 +37,18 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     const clusters = await runKMeansAlogrithm(availableChunks, clusterSize);
     // get one point from each cluster
     logger.info('Clusters after running k-means alog:', clusters);
+    let responseObj = {};
     let response = [];
-    response.maxReturn = maxReturn;
-    response.minReturn = minReturn;
+    responseObj.maxReturn = maxReturn;
+    responseObj.minReturn = minReturn;
     forEach(clusters, cluster => {
       if(cluster.length > 0){
         const idx = Math.floor(Math.random() * cluster.length)
         response.push(cluster[idx]);
       }
     });
-    return response;
+    responseObj.chunks = response;
+    return responseObj;
   } catch (err) {
     logger.error('Error in creating cluster:', err);
     throw err;
