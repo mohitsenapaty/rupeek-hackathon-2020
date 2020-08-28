@@ -10,4 +10,14 @@ router
 
   .get(controller.listInvestments);
 
+router
+  .route('/create')
+  
+  .post(controller.createInvestment);
+
+router
+  .route('/sync')
+  
+  .post(controller.syncInvestment); 
+
 module.exports = router;
