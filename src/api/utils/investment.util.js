@@ -214,5 +214,6 @@ exports.syncInvestments = async (params) => {
   let returnObj = {
     success: `Sync done for the investments - ${investmentIds}`,
   };
+  console.log(returnObj);
   return returnObj;
 };
