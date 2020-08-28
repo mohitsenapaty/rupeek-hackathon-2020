@@ -3,48 +3,58 @@
  * i. e. amount%{unit_value} = 0, where unit_value is the cost of one unit
  */
 const {forEach, sortBy, filter} = require('lodash');
+const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
+const {
+  Chunk, Loan,
+} = global.sequelize;
 
 const getNonInvestedChunks = async() => {
   // find chunks with invested = false
-  response = [
-    {
-      id: 1,
-      loan: 12,
-      interestrate: 5.6,
-      invested: false,
-      closed: false,
-      amount: 1000,
-      timeToExpire: 123,
-    },
-    {
-      id: 1,
-      loan: 13,
-      interestrate: 11.6,
-      invested: false,
-      closed: false,
-      amount: 1000,
-      timeToExpire: 205,
-    },
-    {
-      id: 1,
-      loan: 14,
-      interestrate: 3.2,
-      invested: false,
-      closed: false,
-      amount: 1000,
-      timeToExpire: 23,
-    },
-    {
-      id: 1,
-      loan: 15,
-      interestrate: 7.0,
-      invested: false,
-      closed: false,
-      amount: 1000,
-      timeToExpire: 340,
-    }
-  ];
+  let response = await Chunk.findAll({
+    where: { invested: false },
+  });
+  response = filter(response, chunk => {
+    return chunk.dataValues;
+  });
+  // response = [
+  //   {
+  //     id: 1,
+  //     loan: 12,
+  //     interestrate: 5.6,
+  //     invested: false,
+  //     closed: false,
+  //     amount: 1000,
+  //     timeToExpire: 123,
+  //   },
+  //   {
+  //     id: 1,
+  //     loan: 13,
+  //     interestrate: 11.6,
+  //     invested: false,
+  //     closed: false,
+  //     amount: 1000,
+  //     timeToExpire: 205,
+  //   },
+  //   {
+  //     id: 1,
+  //     loan: 14,
+  //     interestrate: 3.2,
+  //     invested: false,
+  //     closed: false,
+  //     amount: 1000,
+  //     timeToExpire: 23,
+  //   },
+  //   {
+  //     id: 1,
+  //     loan: 15,
+  //     interestrate: 7.0,
+  //     invested: false,
+  //     closed: false,
+  //     amount: 1000,
+  //     timeToExpire: 340,
+  //   }
+  // ];
   return response;
 };
 
@@ -162,10 +172,12 @@ const getMinReturnableValueWithInvestedAmount = async (chunks, amount, time) => 
 };
 
 const populateChunksWithTimeLeft = async(chunks) => {
-  // await Promise.each(chunks, async(chunk) =>{
-  //   // const loan = await loan.get(chunk.loan);
-  //   // chunk.timeToExpire = loan.elapsedDays;
-  //   chunk.timeToExpire = 12;// time in no of days
-  // });
+  await Promise.each(chunks, async(chunk) => {
+    const loan = await Loan.findByPk(chunk.loan);
+    const currentTime = moment.utc();
+    const expiryTimeLoan = moment(loan.expirydate);
+    const daysLeft =expiryTimeLoan.diff(currentTime, 'days');
+    chunk.timeToExpire = daysLeft;
+  });
   return chunks;
 };

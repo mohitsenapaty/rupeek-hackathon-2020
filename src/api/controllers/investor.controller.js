@@ -1,10 +1,12 @@
 const httpStatus = require('http-status');
 const investorMatcher = require('../utils/investor_matcher.util');
+const returnCalculator = require('../utils/return_calculator.util');
 
 exports.filterChunks = async (req, res, next) => {
   try {
-    const {amount, time, rateOfReturn} = req.param;
-    const response = investorMatcher.filterChunksForGivenReturn(amount, time, rateOfReturn);
+    const {amount, time, rateOfReturnLo, rateOfReturnHi} = req.body;
+    const chunkUnits = amount/1000;
+    const response = await returnCalculator.getMostRelevantKChunks(chunkUnits, time, rateOfReturnLo, rateOfReturnHi);
     const responseObj = {
       code: httpStatus.OK,
       message: response,
