@@ -28,12 +28,24 @@ exports.listInvestments = async (req, res, next) => {
 
   exports.createInvestment = async (req, res, next) => {
       try {
-          console.log('createInvestment');
-          const params = { ...req.body, createdAt: moment().utc(), updatedAt: moment().utc(), investedon: moment().utc(), fetchedon: moment().utc() };
-          const investment = await Investment.createInvestmentByParams(params);
-          console.log(investment);
-          return res.status(httpStatus.OK).json(investment);
+        console.log('createInvestment');
+        const params = { ...req.body, createdAt: moment().utc(), updatedAt: moment().utc(), investedon: moment().utc(), fetchedon: moment().utc() };
+        const investment = await Investment.createInvestmentByParams(params);
+        // console.log(investment);
+        return res.status(httpStatus.OK).json(investment);
       } catch (err) {
         return next(err);
       }
   };
+
+  exports.syncInvestment = async (req, res, next) => { 
+      try {
+        console.log('syncInvestment');
+        const investmentIds = req.body.investmentIds;
+        const r = await investmentUtil.syncInvestments({ investmentIds }); 
+        return r;
+      } catch (err) {
+        return next(err);
+      }
+  };
+
