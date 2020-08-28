@@ -1,4 +1,4 @@
-const { isEmpty, groupBy, map } = require('lodash');
+const { isEmpty, groupBy, map, each } = require('lodash');
 
 const { logger } = require('../../config/logger');
 
@@ -184,7 +184,22 @@ const syncInvestment = async (params) => {
       updatedAt: moment().utc(),
       fetchedon: moment().utc(),
     };
-    const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
+    // const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
+    const invChnks = await Investmenttochunk.findAll({
+      where: {
+        investmentid: investmentId,
+      },
+      raw: true,
+    });
+    let sumReturn = 0;
+    each(invChnks, (ic) => {
+      sumReturn += ic.earning;
+    });
+    await Investment.update({
+      returntotal: sumReturn,
+    }, {
+      where: { id: investmentId },
+    });
     console.log('totalearning = ' + totalearning);
   }
 };

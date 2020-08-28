@@ -2,7 +2,7 @@ const {
   Chunk, Loan,
 } = global.sequelize;
 const skmeans = require("skmeans");
-const { forEach, pick, filter, includes, map } = require('lodash');
+const { forEach, pick, filter, includes, map, slice } = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 const investorMatcherUtil = require('./investor_matcher.util');
@@ -10,7 +10,24 @@ const investorMatcherUtil = require('./investor_matcher.util');
 exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
   try {
     let availableChunks = await Chunk.findAll({
-      where: { invested: false },
+      where: { invested: false, closed: false },
+    });
+    availableChunks = filter(availableChunks, chunk => {
+      return chunk.dataValues;
+    });
+    logger.info('No of available chunks for investments:', availableChunks.length);
+    let selectedChunks = slice(availableChunks, 0, clusterSize);
+    return { selectedChunks };
+  } catch (err) {
+    logger.error('Error in creating cluster:', err);
+    throw err;
+  }
+}
+
+exports.getMostRelevantKChunks1 = async (clusterSize, timePeriod, rangeLowInterest, rangeHighInterest) => {
+  try {
+    let availableChunks = await Chunk.findAll({
+      where: { invested: false, closed: false },
     });
     availableChunks = filter(availableChunks, chunk => {
       return chunk.dataValues;
@@ -126,6 +143,7 @@ const runKMeansAlogrithm = async (availableChunks, clusterSize)=>{
   while(size < clusterSize){
     clusters.push([]);
     size++;
+    console.log(size);
   }
   logger.info('Starting k-means')
   const clusterResponse = skmeans(
@@ -142,6 +160,7 @@ const runKMeansAlogrithm = async (availableChunks, clusterSize)=>{
       clusters[clusterId].push(availableChunks[start]);
     }
     start++;
+    console.log(start, totalPoints);
   }
   return clusters;
 };
