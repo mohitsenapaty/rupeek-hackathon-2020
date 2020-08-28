@@ -8,6 +8,6 @@ const router = express.Router();
 router
   .route('/')
 
-  .get(controller.filterChunks);
+  .post(controller.filterChunks);
 
 module.exports = router;

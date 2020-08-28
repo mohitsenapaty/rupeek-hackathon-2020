@@ -47,6 +47,7 @@
     "request-promise": "^4.2.5",
     "sequelize": "^5.10.1",
     "sequelize-cli": "^5.5.0",
+    "skmeans": "^0.11.3",
     "sprintf": "^0.1.5",
     "sqs-consumer": "^3.8.0",
     "winston": "^3.2.1",
