@@ -42,8 +42,8 @@ exports.listInvestments = async (req, res, next) => {
       try {
         console.log('syncInvestment');
         const investmentIds = req.body.investmentIds;
-        const r = await investmentUtil.syncInvestments({ investmentIds }); 
-        return r;
+        const response = await investmentUtil.syncInvestments({ investmentIds }); 
+        return res.status(httpStatus.OK).json(response);
       } catch (err) {
         return next(err);
       }
