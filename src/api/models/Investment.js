@@ -59,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
   Investment.createInvestmentByParams = async (params) => {
     try {
       const investment = await Investment.create(params);
+      console.log(investment);
       return investment.dataValues;
     } catch (err) {
       logger.error('Something unexpected happened (createRequestByParams)', err);
