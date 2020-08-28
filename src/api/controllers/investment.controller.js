@@ -13,6 +13,8 @@ const investmentUtil = require('../utils/investment.util');
 
 const otherUtil = require('../utils/investment_util');
 
+const { Op } = require('../models');
+
 exports.listInvestments = async (req, res, next) => {
     try {
       console.log('listInvestments');
@@ -36,11 +38,22 @@ exports.listInvestments = async (req, res, next) => {
         const params = { ...req.body, createdAt: moment().utc(), updatedAt: moment().utc(), investedon: moment().utc(), fetchedon: moment().utc() };
         paramsMod = omit(params, ['lroi', 'hroi']);
         const investment = await Investment.createInvestmentByParams(paramsMod);
-        await otherUtil.mapInvestmentToChunks(investment.id, req.body.lroi, req.body.hroi);
-        // console.log(investment);
-        return res.status(httpStatus.OK).json(investment);
+        let error1 = '';
+        try{
+          await otherUtil.mapInvestmentToChunks(investment.id, req.body.lroi, req.body.hroi);
+        } catch(err) {
+          console.log(err);
+          error1 = err.message;
+          let updateObject2 = {
+            returntotal: 0,
+            status: 'false',
+            updatedAt: moment().utc(),
+          };
+          const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investment.id] } } });
+        }
+        return res.status(httpStatus.OK).json({ investment, mappingError: error1 });
       } catch (err) {
-        console.log(err);
+        // console.log(err);
         return next(err);
       }
   };
