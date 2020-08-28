@@ -7,7 +7,11 @@ const {
     Investmenttochunk,
   } = global.sequelize;
 
+const { omit } = require('lodash');
+
 const investmentUtil = require('../utils/investment.util');
+
+const otherUtil = require('../utils/investment_util');
 
 exports.listInvestments = async (req, res, next) => {
     try {
@@ -30,10 +34,13 @@ exports.listInvestments = async (req, res, next) => {
       try {
         console.log('createInvestment');
         const params = { ...req.body, createdAt: moment().utc(), updatedAt: moment().utc(), investedon: moment().utc(), fetchedon: moment().utc() };
-        const investment = await Investment.createInvestmentByParams(params);
+        paramsMod = omit(params, ['lroi', 'hroi']);
+        const investment = await Investment.createInvestmentByParams(paramsMod);
+        await otherUtil.mapInvestmentToChunks(investment.id, req.body.lroi, req.body.hroi);
         // console.log(investment);
         return res.status(httpStatus.OK).json(investment);
       } catch (err) {
+        console.log(err);
         return next(err);
       }
   };
