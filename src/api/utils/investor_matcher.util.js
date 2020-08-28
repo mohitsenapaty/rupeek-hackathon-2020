@@ -72,7 +72,6 @@ exports.filterChunksForGivenReturn = async(chunks, amount, time, rateOfReturn)=>
       throw new Error('Invalid amount: Amount undivisible into chunks');
     }
     const expectedReturnValue = amount * rateOfReturn * time / 365 * .01;
-    // const availableChunks = await getNonInvestedChunks();
     const availableChunks = chunks;
     logger.info('Total no of availble chunks non-invested are:', availableChunks.length);
     // get the options with equal or less than the given time
@@ -108,7 +107,7 @@ const getChunksWithGivenReturnValue = async (chunks, expectedReturn) => {
   let choseStart = true;
   let returnSorFar = 0;
   while (start < end) {
-    if(choseStart && chunks[start].returnableValue + returnSorFar <= expectedReturn){
+    if(choseStart && chunks[start].amount + returnSorFar <= expectedReturn){
       //pick the smallest value
       response.push(chunks[start]);
       returnSorFar += chunks[start].amount;

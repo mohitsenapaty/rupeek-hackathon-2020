@@ -54,5 +54,16 @@ module.exports = (sequelize, DataTypes) => {
       throw err;
     }
   };
+  Chunk.findChunkByID = async (id) => {
+    try {
+      const reqRow = await Chunk.findOne({
+        where: { id },
+      });
+      return reqRow;
+    } catch (err) {
+      logger.error('Something unexpected happened (find by id req)', err);
+      throw err;
+    }
+  };
   return Chunk;
 };

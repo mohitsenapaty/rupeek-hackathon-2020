@@ -2,7 +2,7 @@ const {
   Chunk, Loan,
 } = global.sequelize;
 const skmeans = require("skmeans");
-const { forEach, pick, filter, includes } = require('lodash');
+const { forEach, pick, filter, includes, map } = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 const investorMatcherUtil = require('./investor_matcher.util');

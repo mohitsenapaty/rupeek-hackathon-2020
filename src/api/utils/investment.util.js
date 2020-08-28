@@ -2,6 +2,8 @@ const { isEmpty, groupBy, map } = require('lodash');
 
 const { logger } = require('../../config/logger');
 
+const { moment } = require('../utils/commons.utils');
+
 const { Op } = require('../models');
 
 const {
@@ -139,4 +141,79 @@ exports.getInvestments = async (filterParams) => {
         logger.error('Something unexpected happened (get investment details util): ', err);
         throw err;
     }
+};
+
+const syncInvestment = async (params) => {
+  const { investmentId, invtofetchmap } = params;
+  const fetchedondate = moment(invtofetchmap[investmentId]).utc().add(5.5, 'hours').startOf('day');
+  const currentdate = moment().utc().add(5.5, 'hours').startOf('day');
+  if (currentdate.diff(fetchedondate, 'days') > 0) {
+    let searchInvToChunks = {};
+    searchInvToChunks.investmentid = { [Op.in]: [investmentId] };
+    let invtochunk = await Investmenttochunk.findInvToChunksByParamsInclude(searchInvToChunks);
+    let totalearning = 0;
+    /* map(invtochunk, (ic) => {
+      let chunk = await Chunk.findChunkByID(ic.id);
+      if (!chunk.closed) {
+        let earning = (amount * schemeinterest * 0.01 * currentdate.diff(fetchedondate, 'days')) / 365;
+        let updateObject = {
+          earning: ic.earning + earning,
+          updatedAt: moment().utc(),
+        };
+        const updateRows = await Investmenttochunk.update(updateObject, { where: { id: { [Op.in]: [ic.id] } } });
+        totalearning = totalearning + earning;
+      }
+    }); */
+    for(i in invtochunk) {
+      let chunk = await Chunk.findChunkByID(invtochunk[i].id);
+      if (!chunk.closed) {
+        let earning = (invtochunk[i].amount * invtochunk[i].schemeinterest * 0.01 * currentdate.diff(fetchedondate, 'days')) / 365;
+        console.log('earning = ' + earning);
+        let updateObject = {
+          earning: invtochunk[i].earning + earning,
+          updatedAt: moment().utc(),
+        };
+        const updateRows = await Investmenttochunk.update(updateObject, { where: { id: { [Op.in]: [invtochunk[i].id] } } });
+        totalearning = totalearning + earning;
+      }
+    }
+    let updateObject2 = {
+      returntotal: totalearning,
+      updatedAt: moment().utc(),
+      fetchedon: moment().utc(),
+    };
+    const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
+    console.log('totalearning = ' + totalearning);
+  }
+};
+
+exports.syncInvestments = async (params) => {
+  const { investmentIds } = params;
+  const investmentIdList = investmentIds.split(',');
+  let parallelExecutionArray = [];
+  let invtofetchmap = {};
+  let searchInvestmentsParams = {};
+  if (investmentIdList.length > 0) {
+    searchInvestmentsParams.id = { [Op.in]: investmentIdList };
+  }
+  const orderInvestments = [['createdAt', 'DESC']];
+  let investments = await Investment.findInvestmentByParamsInclude(searchInvestmentsParams, orderInvestments);
+  // console.log(investments);
+  let transformedInvestments = transformInvestments({ investments });
+  console.log(transformedInvestments);
+  map(transformedInvestments, (investment) => {
+    invtofetchmap[investment.id] = investment.fetchedon;
+  });
+  console.log(investmentIdList, invtofetchmap);
+  map(investmentIdList, (investmentId) => {
+    parallelExecutionArray.push(syncInvestment({ investmentId, invtofetchmap }));
+  });
+  if (parallelExecutionArray.length > 0) {
+    await Promise.all(parallelExecutionArray);
+  }
+  let returnObj = {
+    success: `Sync done for the investments - ${investmentIds}`,
+  };
+  console.log(returnObj);
+  return returnObj;
 };
