@@ -99,7 +99,9 @@ const runKMeansAlogrithm = async (availableChunks, clusterSize)=>{
     // start point is assigned to clusterId
     const clusterId = clusterResponse.idxs[start] - 1;
     // id offset is 1
-    clusters[clusterId].push(availableChunks[start]);
+    if(clusterId > 0) {
+      clusters[clusterId].push(availableChunks[start]);
+    }
     start++;
   }
   return clusters;
