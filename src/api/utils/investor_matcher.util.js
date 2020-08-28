@@ -112,16 +112,19 @@ const getChunksWithGivenReturnValue = async (chunks, expectedReturn) => {
       response.push(chunks[start]);
       returnSorFar += chunks[start].amount;
       choseStart = false;
+      start++;
     } else {
       start++;
+      choseStart = false;
     }
-    if (!choseStart && chunks[end].amount + returnSorFar <= expectedReturn){
+    if (!choseStart && chunks[end].returnableValue + returnSorFar <= expectedReturn){
       //pick the largest value
       response.push(chunks[end]);
       returnSorFar += chunks[end].amount;
       choseStart = true;
       end--;
     } else {
+      choseStart = true;
       end--;
     }
   }
