@@ -27,7 +27,6 @@ exports.mapInvestmentToChunks = async(investmentid, returnLow, returnHigh) =>{
     );
     const updateParams = {
       invested: true,
-      status: 'INVESTED',
     };
     await Chunk.update(updateParams, {
       where: {id: chunk.id}
