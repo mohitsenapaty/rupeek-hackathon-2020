@@ -10,4 +10,9 @@ router
 
   .get(controller.listInvestments);
 
+router
+  .route('/create')
+  
+  .post(controller.createInvestment);
+
 module.exports = router;
