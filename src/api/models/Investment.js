@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
     closedon: {
       type: DataTypes.DATE,
     },
+    investmenttenure: {
+      type: DataTypes.REAL,
+    },
   }, {
     tableName: 'investment',
   });
@@ -49,7 +52,16 @@ module.exports = (sequelize, DataTypes) => {
       });
       return reqRows;
     } catch (err) {
-      logger.error('Something unexpected happened (find by params req)', err);
+      logger.error('Something unexpected happened (findInvestmentByParamsInclude)', err);
+      throw err;
+    }
+  };
+  Investment.createInvestmentByParams = async (params) => {
+    try {
+      const investment = await Investment.create(params);
+      return investment.dataValues;
+    } catch (err) {
+      logger.error('Something unexpected happened (createRequestByParams)', err);
       throw err;
     }
   };
