@@ -2,7 +2,7 @@ const {
   Chunk, Loan,
 } = global.sequelize;
 const skmeans = require("skmeans");
-const { forEach, sortBy, filter } = require('lodash');
+const { forEach, pick, filter } = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 
@@ -17,19 +17,15 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     logger.info('No of available chunks for investments:', availableChunks.length);
     availableChunks = await populateChunksWithTimeLeft(availableChunks);
     availableChunks = await populateChunksWithPercentageRateOfReturn(availableChunks, timePeriod);
-    let maxReturn = -1;
-    let minReturn = 100000000;
-    forEach(availableChunks, chunk => {
-      if (maxReturn < chunk.percentageReturn){
-        maxReturn = chunk.percentageReturn;
-      }
-      if (minReturn > chunk.percentageReturn){
-        minReturn = chunk.percentageReturn;
-      }
-    });
+    availableChunks = await populateChunksWithRateOfInterestFactor(availableChunks);
+    availableChunks = await populateChunksWithMaxPercentageRateOfReturn(availableChunks, timePeriod);
+    availableChunks = await populateChunksWithMinPercentageRateOfReturn(availableChunks, timePeriod);
     availableChunks = filter(availableChunks, chunk => {
       return chunk.percentageReturn <= rangeHighInterest && chunk.percentageReturn >= rangeLowInterest;
     });
+    // calculate max and min return from availble options
+    let maxReturn = await getMaxReturnsFromChosenChunks(availableChunks);
+    let minReturn = await getMinReturnsFromChosenChunks(availableChunks);
     if(availableChunks.length < 1){
       throw new Error('No chunks found with given serach criteria');
     }
@@ -44,7 +40,19 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     forEach(clusters, cluster => {
       if(cluster.length > 0){
         const idx = Math.floor(Math.random() * cluster.length)
-        response.push(cluster[idx]);
+        chunkUnit = {...pick(cluster[idx], [
+          'id',
+          'loan',
+          'interestrate',
+          'invested',
+          'closed',
+          'amount',
+          'maxPercentageReturn',
+          'minPercentageReturn',
+          'percentageReturn',
+          'status',
+        ])};
+        response.push(chunkUnit);
       }
     });
     responseObj.chunks = response;
@@ -53,6 +61,22 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     logger.error('Error in creating cluster:', err);
     throw err;
   }
+};
+
+const getMaxReturnsFromChosenChunks = async(chunks) => {
+  let returnValue = 0;
+  forEach(chunks, chunk => {
+    returnValue += chunk.maxPercentageReturn;
+  });
+  return returnValue/chunks.length;
+};
+
+const getMinReturnsFromChosenChunks = async (chunks) => {
+  let returnValue = 0;
+  forEach(chunks, chunk => {
+    returnValue += chunk.minPercentageReturn;
+  });
+  return returnValue / chunks.length;
 };
 
 const runKMeansAlogrithm = async (availableChunks, clusterSize)=>{
@@ -86,6 +110,7 @@ const populateChunksWithPercentageRateOfReturn = async (availableChunks, days) =
   const interestRepaymentFactor = 1;
   const prinicipalRepaymentFactor = 1;
   const releastFactor = 1;
+  const rateOfInterest = 1;
   let timeFactor = 1;
   await Promise.each(availableChunks, async chunk => {
     timeFactor = await calculateTimeFactor(chunk, days);
@@ -93,7 +118,61 @@ const populateChunksWithPercentageRateOfReturn = async (availableChunks, days) =
     returnValue = returnValue * interestRepaymentFactor;
     returnValue = returnValue * releastFactor;
     returnValue = returnValue * timeFactor;
+    returnValue = returnValue * rateOfInterest;
     chunk.percentageReturn = returnValue / chunk.amount;
+  });
+  return availableChunks;
+};
+
+const populateChunksWithMinPercentageRateOfReturn = async (availableChunks, days) => {
+  const prinicipalRepaymentFactor = 0.7;
+  const releastFactor = 0.8;
+  const interestRepaymentFactor = 0.3;
+  let timeFactor = 1;
+  await Promise.each(availableChunks, async chunk => {
+    timeFactor = await calculateTimeFactor(chunk, days);
+    let returnValue = chunk.amount * prinicipalRepaymentFactor;
+    returnValue = returnValue * interestRepaymentFactor * chunk.interestrate;
+    returnValue = returnValue * releastFactor;
+    returnValue = returnValue * timeFactor;
+    chunk.minPercentageReturn = returnValue / chunk.amount;
+  });
+  return availableChunks;
+};
+
+/**
+ *  interest factor = rate of interest/highest rate of interest
+ * @param {*} chunks
+ */
+const populateChunksWithRateOfInterestFactor = async(chunks) => {
+  let maxInterestRate = -1;
+  forEach(chunks, chunk => {
+    if (chunk.interestrate > maxInterestRate){
+      maxInterestRate = chunk.interestrate;
+    }
+  });
+  // if no max value found, don't count contribution of interest rate factor
+  if(maxInterestRate === -1){
+    maxInterestRate = 1;
+  }
+  forEach(chunks, chunk => {
+    chunk.interestRepaymentFactor = chunk.interestrate/maxInterestRate;
+  });
+  return chunks;
+};
+
+const populateChunksWithMaxPercentageRateOfReturn = async (availableChunks, days) => {
+  const interestRepaymentFactor = 0.7;
+  const prinicipalRepaymentFactor = 1;
+  const releastFactor = 1;
+  let timeFactor = 1;
+  await Promise.each(availableChunks, async chunk => {
+    timeFactor = await calculateTimeFactor(chunk, days);
+    let returnValue = chunk.amount * prinicipalRepaymentFactor;
+    returnValue = returnValue * interestRepaymentFactor * chunk.interestrate;
+    returnValue = returnValue * releastFactor;
+    returnValue = returnValue * timeFactor;
+    chunk.maxPercentageReturn = returnValue / chunk.amount;
   });
   return availableChunks;
 };
