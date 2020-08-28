@@ -17,14 +17,29 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     logger.info('No of available chunks for investments:', availableChunks.length);
     availableChunks = await populateChunksWithTimeLeft(availableChunks);
     availableChunks = await populateChunksWithPercentageRateOfReturn(availableChunks, timePeriod);
+    let maxReturn = -1;
+    let minReturn = 100000000;
+    forEach(availableChunks, chunk => {
+      if (maxReturn < chunk.percentageReturn){
+        maxReturn = chunk.percentageReturn;
+      }
+      if (minReturn > chunk.percentageReturn){
+        minReturn = chunk.percentageReturn;
+      }
+    });
     availableChunks = filter(availableChunks, chunk => {
       return chunk.percentageReturn <= rangeHighInterest && chunk.percentageReturn >= rangeLowInterest;
     });
+    if(availableChunks.length < 1){
+      throw new Error('No chunks found with given serach criteria');
+    }
     logger.info('Chunks with given return and time:', availableChunks);
     const clusters = await runKMeansAlogrithm(availableChunks, clusterSize);
     // get one point from each cluster
     logger.info('Clusters after running k-means alog:', clusters);
     let response = [];
+    response.maxReturn = maxReturn;
+    response.minReturn = minReturn;
     forEach(clusters, cluster => {
       if(cluster.length > 0){
         const idx = Math.floor(Math.random() * cluster.length)
@@ -34,6 +49,7 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     return response;
   } catch (err) {
     logger.error('Error in creating cluster:', err);
+    throw err;
   }
 };
 
