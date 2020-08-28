@@ -165,7 +165,9 @@ const syncInvestment = async (params) => {
       }
     }); */
     for(i in invtochunk) {
-      let chunk = await Chunk.findChunkByID(invtochunk[i].id);
+      let chunk = await Chunk.findChunkByID(invtochunk[i].chunkid);
+      console.log('checkkkkk ------- ');
+      console.log(chunk.id, chunk.closed);
       if (!chunk.closed) {
         let earning = (invtochunk[i].amount * invtochunk[i].schemeinterest * 0.01 * currentdate.diff(fetchedondate, 'days')) / 365;
         console.log('earning = ' + earning);
@@ -200,7 +202,7 @@ exports.syncInvestments = async (params) => {
   let investments = await Investment.findInvestmentByParamsInclude(searchInvestmentsParams, orderInvestments);
   // console.log(investments);
   let transformedInvestments = transformInvestments({ investments });
-  console.log(transformedInvestments);
+  // console.log(transformedInvestments);
   map(transformedInvestments, (investment) => {
     invtofetchmap[investment.id] = investment.fetchedon;
   });
