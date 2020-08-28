@@ -179,11 +179,13 @@ const syncInvestment = async (params) => {
         totalearning = totalearning + earning;
       }
     }
+    let investmentToUpdate = await Investment.findOne({where: { investmentId }});
     let updateObject2 = {
-      returntotal: totalearning,
+      returntotal: investmentToUpdate.returntotal + totalearning,
       updatedAt: moment().utc(),
       fetchedon: moment().utc(),
     };
+    console.log(investmentId);
     const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
     console.log('totalearning = ' + totalearning);
   }
