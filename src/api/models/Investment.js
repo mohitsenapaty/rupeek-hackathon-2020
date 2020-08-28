@@ -1,3 +1,5 @@
+const { logger } = require('../../config/logger');
+
 module.exports = (sequelize, DataTypes) => {
   const Investment = sequelize.define('Investment', {
     investor: {
@@ -34,5 +36,18 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'investment',
   });
+  Investment.findInvestmentByParamsInclude = async (params, order, additional) => {
+    try {
+      // const paramsAll = { ...params, ...additional };
+      const reqRows = await Investment.findAll({
+        where: params,
+        order,
+      });
+      return reqRows;
+    } catch (err) {
+      logger.error('Something unexpected happened (find by params req)', err);
+      throw err;
+    }
+  };
   return Investment;
 };

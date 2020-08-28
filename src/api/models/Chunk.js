@@ -1,3 +1,5 @@
+const { logger } = require('../../config/logger');
+
 module.exports = (sequelize, DataTypes) => {
   const Chunk = sequelize.define('Chunk', {
     loan: {
@@ -41,5 +43,16 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'chunk',
   });
+  Chunk.findChunksByParamsInclude = async (params) => {
+    try {
+      const reqRows = await Chunk.findAll({
+        where: params,
+      });
+      return reqRows;
+    } catch (err) {
+      logger.error('Something unexpected happened (find by params req)', err);
+      throw err;
+    }
+  };
   return Chunk;
 };

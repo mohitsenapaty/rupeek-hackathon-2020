@@ -4,9 +4,13 @@ Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
 const { port, env } = require('./config/vars');
 
-const db = require('./api/models');
+const sequelize = require('./config/sequelize');
+// Init sequelize
+sequelize.init();
 
-global.sequelize = db;
+// const db = require('./api/models');
+
+// global.sequelize = db;
 
 const app = require('./config/express');
 
