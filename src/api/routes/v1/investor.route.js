@@ -10,4 +10,9 @@ router
 
   .post(controller.filterChunks);
 
+router
+  .route('/mapChunks')
+
+  .post(controller.mapChunks);
+
 module.exports = router;

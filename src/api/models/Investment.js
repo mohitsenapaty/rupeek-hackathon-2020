@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.REAL,
       allowNull: false,
     },
+    investmenttenure: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     returntotal: {
       type: DataTypes.REAL,
       allowNull: false,
