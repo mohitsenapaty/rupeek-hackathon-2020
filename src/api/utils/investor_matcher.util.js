@@ -65,19 +65,19 @@ const validateInputAmount = async(amount) => {
   return amount % CHUNK_SIZE === 0;
 };
 
-exports.filterChunksForGivenReturn = async(amount, time, rateOfReturn)=>{
+exports.filterChunksForGivenReturn = async(chunks, amount, time, rateOfReturn)=>{
   try{
     logger.info('Request received for', {amount: amount, time: time, rateOfReturn: rateOfReturn});
     if (!validateInputAmount(amount)) {
       throw new Error('Invalid amount: Amount undivisible into chunks');
     }
     const expectedReturnValue = amount * rateOfReturn * time / 365 * .01;
-    const availableChunks = await getNonInvestedChunks();
+    const availableChunks = chunks;
     logger.info('Total no of availble chunks non-invested are:', availableChunks.length);
     // get the options with equal or less than the given time
     let chunksWithTimeLeft = await populateChunksWithTimeLeft(availableChunks);
     chunksWithTimeLeft = filter(chunksWithTimeLeft, chunk => {
-      return chunk.timeToExpire <= time;
+      return chunk.percentageReturn <= rateOfReturn;
     });
     logger.info('No of chunks with the given time frame: ', chunksWithTimeLeft.length);
     forEach(chunksWithTimeLeft, chunk => {
@@ -94,7 +94,7 @@ exports.filterChunksForGivenReturn = async(amount, time, rateOfReturn)=>{
     // find the options in the list that would sum up to the closest expectedreturn value
 
     chunksWithTimeLeft = sortBy(chunksWithTimeLeft, ['returnableValue']);
-    let filteredValues = await getChunksWithGivenReturnValue(chunksWithTimeLeft, expectedReturnValue);
+    let filteredValues = await getChunksWithGivenReturnValue(chunksWithTimeLeft, amount);
     return filteredValues;
   } catch(err){
     logger.error(err);
@@ -107,18 +107,21 @@ const getChunksWithGivenReturnValue = async (chunks, expectedReturn) => {
   let choseStart = true;
   let returnSorFar = 0;
   while (start < end) {
-    if(choseStart && chunks[start].returnableValue + returnSorFar <= expectedReturn){
+    if(choseStart && chunks[start].amount + returnSorFar <= expectedReturn){
       //pick the smallest value
       response.push(chunks[start]);
-      returnSorFar += chunks[start];
+      returnSorFar += chunks[start].amount;
       choseStart = false;
+    } else {
       start++;
     }
-    else if (!choseStart && chunks[end].returnableValue + returnSorFar <= expectedReturn){
+    if (!choseStart && chunks[end].amount + returnSorFar <= expectedReturn){
       //pick the largest value
       response.push(chunks[end]);
-      returnSorFar += chunks[end];
+      returnSorFar += chunks[end].amount;
       choseStart = true;
+      end--;
+    } else {
       end--;
     }
   }
