@@ -81,6 +81,7 @@ const createLoans = async (params) => {
     invested: false,
     closed: false,
     fetchedon: moment(),
+    amount: 1000,
   };
   console.log(initialLoanChunk);
   const numChunks = Math.floor(params.balanceamount / 1000);

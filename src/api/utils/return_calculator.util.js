@@ -2,7 +2,7 @@ const {
   Chunk, Loan,
 } = global.sequelize;
 const skmeans = require("skmeans");
-const { forEach, pick, filter, includes, map, slice } = require('lodash');
+const { forEach, pick, filter, includes, map, slice} = require('lodash');
 const moment = require('../utils/commons.utils').moment;
 const { logger } = require('../../config/logger');
 const investorMatcherUtil = require('./investor_matcher.util');
@@ -45,7 +45,26 @@ exports.getMostRelevantKChunks = async (clusterSize, timePeriod, rangeLowInteres
     let maxReturn = await getMaxReturnsFromChosenChunks(availableChunks);
     let minReturn = await getMinReturnsFromChosenChunks(availableChunks);
     if(availableChunks.length < 1){
-      throw new Error('No chunks found with given serach criteria');
+      // throw new Error('No chunks found with given serach criteria');
+      let responseObj = {};
+      let response = [];
+      responseObj.maxReturn = maxReturn;
+      responseObj.minReturn = minReturn;
+      const chunks = await Chunk.findAll({
+        where: {
+          invested: false,
+          closed: false,
+        },
+      });
+      console.log(chunks.length);
+      filter(chunks, (c) => {
+        return (c.currentinterestrate > minReturn) && (c.currentinterestrate < maxReturn);
+      });
+      console.log(chunks.length);
+      let usedChunks = slice(chunks, 0, clusterSize);
+      console.log(usedChunks);
+      responseObj.chunks=usedChunks;
+      return responseObj;
     }
     logger.info('Chunks with given return and time:', availableChunks);
     const clusters = await runKMeansAlogrithm(availableChunks, clusterSize);

@@ -179,12 +179,14 @@ const syncInvestment = async (params) => {
         totalearning = totalearning + earning;
       }
     }
+    let investmentToUpdate = await Investment.findOne({where: { id: investmentId }});
     let updateObject2 = {
-      returntotal: totalearning,
+      returntotal: investmentToUpdate.returntotal + totalearning,
       updatedAt: moment().utc(),
       fetchedon: moment().utc(),
     };
     // const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
+    /*
     const invChnks = await Investmenttochunk.findAll({
       where: {
         investmentid: investmentId,
@@ -202,6 +204,9 @@ const syncInvestment = async (params) => {
     }, {
       where: { id: investmentId },
     });
+    */
+    console.log(investmentId);
+    const updateRows2 = await Investment.update(updateObject2, { where: { id: { [Op.in]: [investmentId] } } });
     console.log('totalearning = ' + totalearning);
   }
 };
