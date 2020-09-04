@@ -197,6 +197,8 @@ const syncInvestment = async (params) => {
     });
     await Investment.update({
       returntotal: sumReturn,
+      updatedAt: moment().utc(),
+      fetchedon: moment().utc(),
     }, {
       where: { id: investmentId },
     });
